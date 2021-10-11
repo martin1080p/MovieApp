@@ -30,9 +30,9 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
         if (snapshot.connectionState == ConnectionState.done) {
           _controller = BetterPlayerController(
               BetterPlayerConfiguration(
-                  aspectRatio: snapshot.data[2],
-                  fullScreenAspectRatio: snapshot.data[2],
-                  fullScreenByDefault: snapshot.data[3],
+                  aspectRatio: snapshot.data["aspect_ratio"],
+                  fullScreenAspectRatio: snapshot.data["aspect_ratio"],
+                  fullScreenByDefault: snapshot.data["is_device_tv"],
                   fit: BoxFit.contain,
                   autoPlay: true,
                   looping: false,
@@ -44,7 +44,13 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                   controlsConfiguration: BetterPlayerControlsConfiguration(
                       enableSkips: false, enableFullscreen: true, enablePlayPause: true, enablePlaybackSpeed: true, enablePip: true)),
               betterPlayerDataSource:
-                  BetterPlayerDataSource(BetterPlayerDataSourceType.network, snapshot.data[0], resolutions: snapshot.data[1]));
+                  BetterPlayerDataSource(
+                    BetterPlayerDataSourceType.network,
+                    snapshot.data["initial_link"],
+                    resolutions: snapshot.data["resolutions"],
+                    subtitles: snapshot.data["subtitles"]
+                  )
+              );
           return Container(
               child: Column(
             children: [

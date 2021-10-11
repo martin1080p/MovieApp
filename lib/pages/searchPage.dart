@@ -7,6 +7,7 @@ import 'package:test_app/functions/regex.dart';
 import 'package:test_app/functions/data.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:test_app/elements/searchItem.dart';
+import 'package:test_app/request/api-request.dart';
 
 class Series {
   final int season;
@@ -35,9 +36,7 @@ class _SearchPageState extends State<SearchPage> {
         shortcuts: <LogicalKeySet, Intent>{
           LogicalKeySet(LogicalKeyboardKey.select): const ActivateIntent(),
         },
-        child: MaterialApp(
-          theme: Theme.of(context),
-          home: Scaffold(
+        child: Scaffold(
               backgroundColor: Theme.of(context).primaryColor,
               appBar: AppBar(
                 elevation: 0,
@@ -88,7 +87,7 @@ class _SearchPageState extends State<SearchPage> {
                   }
                 },
               )),
-        ));
+        );
   }
 
   Future fetchSearchResults(String text, BuildContext ctx) async {
@@ -97,12 +96,10 @@ class _SearchPageState extends State<SearchPage> {
 
       text = inputYear != null ? text.replaceAll(inputYear, "") : text;
 
-      Uri movieUrl = Uri.parse(
-          'https://api.themoviedb.org/3/search/movie?api_key=ad5cdc02df63e67fa695781a8a3cf3fc&language=cs-CZ&query=$text&page=1&include_adult=false&primary_release_year=$inputYear');
-      var movieResults = jsonDecode((await http.get(movieUrl)).body)["results"];
-      Uri tvUrl = Uri.parse(
-          'https://api.themoviedb.org/3/search/tv?api_key=ad5cdc02df63e67fa695781a8a3cf3fc&language=cs-CZ&page=1&query=$text&include_adult=false&first_air_date_year=$inputYear');
-      var tvResults = jsonDecode((await http.get(tvUrl)).body)["results"];
+      List<dynamic> movieResults = await ApiRequests().getSearchMovies(text, inputYear, 1, true);
+
+      //Uri tvUrl = Uri.parse('https://api.themoviedb.org/3/search/tv?api_key=ad5cdc02df63e67fa695781a8a3cf3fc&language=cs-CZ&page=1&query=$text&include_adult=false&first_air_date_year=$inputYear');
+      List<dynamic> tvResults = await ApiRequests().getSearchShows(text, inputYear, 1, true);
 
       return OrientationBuilder(builder: (context, orientation) {
         return SingleChildScrollView(
@@ -137,17 +134,17 @@ class _SearchPageState extends State<SearchPage> {
                     physics: ClampingScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
-                      String _movieImageUrl = movieResults[index]["poster_path"];
+                      String _movieImageUrl = movieResults[index]["image"];
                       String _movieTitle = movieResults[index]["title"];
                       String _movieOriginalTitle =
                           !checkEmptyNull(movieResults[index]["original_title"]) ? movieResults[index]["original_title"] : _movieTitle;
-                      String _movieReleaseYear = !checkEmptyNull(movieResults[index]["release_date"])
-                          ? " (" + DateTime.parse(movieResults[index]["release_date"]).year.toString() + ")"
+                      String _movieReleaseYear = !checkEmptyNull(movieResults[index]["release_year"])
+                          ? " (" + movieResults[index]["release_year"] + ")"
                           : "";
-                      String _movieDescription = !checkEmptyNull(movieResults[index]["overview"]) ? movieResults[index]["overview"] : "";
+                      String _movieDescription = !checkEmptyNull(movieResults[index]["description"]) ? movieResults[index]["description"] : "";
 
                       int _movieId = movieResults[index]["id"];
-                      double _movieVote = movieResults[index]["vote_average"].toDouble();
+                      double _movieVote = movieResults[index]["vote"].toDouble();
 
                       return getSearchItem(context, _movieId, _movieTitle, _movieOriginalTitle, _movieImageUrl, _movieReleaseYear,
                           _movieDescription, _movieVote, false);
@@ -185,16 +182,16 @@ class _SearchPageState extends State<SearchPage> {
                     physics: ClampingScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
-                      String _tvImageUrl = tvResults[index]["poster_path"];
-                      String _tvTitle = tvResults[index]["name"];
+                      String _tvImageUrl = tvResults[index]["image"];
+                      String _tvTitle = tvResults[index]["title"];
                       String _tvOriginalTitle =
-                          !checkEmptyNull(tvResults[index]["original_name"]) ? tvResults[index]["original_name"] : _tvTitle;
-                      String _tvReleaseYear = !checkEmptyNull(tvResults[index]["first_air_date"])
-                          ? " (" + DateTime.parse(tvResults[index]["first_air_date"]).year.toString() + ")"
+                          !checkEmptyNull(tvResults[index]["original_title"]) ? tvResults[index]["original_title"] : _tvTitle;
+                      String _tvReleaseYear = !checkEmptyNull(tvResults[index]["release_year"])
+                          ? " (" + tvResults[index]["release_year"] + ")"
                           : "";
-                      String _tvDescription = !checkEmptyNull(tvResults[index]["overview"]) ? tvResults[index]["overview"] : "";
+                      String _tvDescription = !checkEmptyNull(tvResults[index]["description"]) ? tvResults[index]["description"] : "";
                       int _tvId = tvResults[index]["id"];
-                      double _tvVote = tvResults[index]["vote_average"].toDouble();
+                      double _tvVote = tvResults[index]["vote"].toDouble();
 
                       return getSearchItem(
                           context, _tvId, _tvTitle, _tvOriginalTitle, _tvImageUrl, _tvReleaseYear, _tvDescription, _tvVote, true);

@@ -79,6 +79,7 @@ Future fetchPeopleResults(int id, bool isTV, BuildContext ctx, bool fetchActors,
       : "https://api.themoviedb.org/3/movie/$id/credits?api_key=ad5cdc02df63e67fa695781a8a3cf3fc&language=cs-CZ";
 
   var result = jsonDecode((await http.get(Uri.parse(requestUrl))).body);
+
   var people = fetchActors ? result["cast"] : result["crew"];
 
   var infoArray = [];
