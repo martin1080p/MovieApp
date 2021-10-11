@@ -7,10 +7,8 @@ Future fetchStorageVideoSource(String url) async {
   final webScraper = WebScraper();
   if (await webScraper.loadFullURL(url)) {
     String script = webScraper.getAllScripts()[8];
-    String links = script
-        .substring(script.indexOf('['), script.indexOf(']') + 1)
-        .replaceAll("'", '"')
-        .replaceAll(new RegExp(r"\s+\b|\b\s"), "");
+    String links =
+        script.substring(script.indexOf('['), script.indexOf(']') + 1).replaceAll("'", '"').replaceAll(new RegExp(r"\s+\b|\b\s"), "");
     String newString = links.replaceAllMapped(RegExp(r'(?<=[{[,])\s*([\w]+(?=\s*:))'), (match) {
       return '"${match.group(0)}"';
     });

@@ -59,8 +59,7 @@ class _SearchPageState extends State<SearchPage> {
                   decoration: InputDecoration(
                     enabledBorder: InputBorder.none,
                     focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Theme.of(context).accentColor),
+                      borderSide: BorderSide(color: Theme.of(context).accentColor),
                     ),
                     hintText: 'Vyhledej film nebo seriál...',
                     suffixIcon: IconButton(
@@ -80,8 +79,7 @@ class _SearchPageState extends State<SearchPage> {
                     case ConnectionState.waiting:
                     case ConnectionState.active:
                       return LinearProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).accentColor),
+                        valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
                       );
                     case ConnectionState.done:
                       return snapshot.data;
@@ -95,8 +93,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Future fetchSearchResults(String text, BuildContext ctx) async {
     if (text != "") {
-      String inputYear =
-          getRegexMatch(text, '\\b(?:(?:19[0-9][0-9])|(?:20[0-9][0-9]))\\b');
+      String inputYear = getRegexMatch(text, '\\b(?:(?:19[0-9][0-9])|(?:20[0-9][0-9]))\\b');
 
       text = inputYear != null ? text.replaceAll(inputYear, "") : text;
 
@@ -123,18 +120,13 @@ class _SearchPageState extends State<SearchPage> {
                   Container(
                     //Movies section
                     decoration: BoxDecoration(
-                        color: Theme.of(context).accentColor,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20.0))),
+                        color: Theme.of(context).accentColor, borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.0))),
                     padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         "Filmy",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 18.0,
-                            color: Colors.black),
+                        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18.0, color: Colors.black),
                       ),
                     ),
                   ),
@@ -145,41 +137,20 @@ class _SearchPageState extends State<SearchPage> {
                     physics: ClampingScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
-                      String _movieImageUrl =
-                          movieResults[index]["poster_path"];
+                      String _movieImageUrl = movieResults[index]["poster_path"];
                       String _movieTitle = movieResults[index]["title"];
                       String _movieOriginalTitle =
-                          !checkEmptyNull(movieResults[index]["original_title"])
-                              ? movieResults[index]["original_title"]
-                              : _movieTitle;
-                      String _movieReleaseYear =
-                          !checkEmptyNull(movieResults[index]["release_date"])
-                              ? " (" +
-                                  DateTime.parse(
-                                          movieResults[index]["release_date"])
-                                      .year
-                                      .toString() +
-                                  ")"
-                              : "";
-                      String _movieDescription =
-                          !checkEmptyNull(movieResults[index]["overview"])
-                              ? movieResults[index]["overview"]
-                              : "";
+                          !checkEmptyNull(movieResults[index]["original_title"]) ? movieResults[index]["original_title"] : _movieTitle;
+                      String _movieReleaseYear = !checkEmptyNull(movieResults[index]["release_date"])
+                          ? " (" + DateTime.parse(movieResults[index]["release_date"]).year.toString() + ")"
+                          : "";
+                      String _movieDescription = !checkEmptyNull(movieResults[index]["overview"]) ? movieResults[index]["overview"] : "";
 
                       int _movieId = movieResults[index]["id"];
-                      double _movieVote =
-                          movieResults[index]["vote_average"].toDouble();
+                      double _movieVote = movieResults[index]["vote_average"].toDouble();
 
-                      return getSearchItem(
-                          context,
-                          _movieId,
-                          _movieTitle,
-                          _movieOriginalTitle,
-                          _movieImageUrl,
-                          _movieReleaseYear,
-                          _movieDescription,
-                          _movieVote,
-                          false);
+                      return getSearchItem(context, _movieId, _movieTitle, _movieOriginalTitle, _movieImageUrl, _movieReleaseYear,
+                          _movieDescription, _movieVote, false);
                     },
                     itemCount: min(movieResults.length, 40),
                   ),
@@ -197,18 +168,13 @@ class _SearchPageState extends State<SearchPage> {
                   Container(
                     //TV Shows section
                     decoration: BoxDecoration(
-                        color: Theme.of(context).accentColor,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20.0))),
+                        color: Theme.of(context).accentColor, borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.0))),
                     padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         "Seriály",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 18.0,
-                            color: Colors.black),
+                        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18.0, color: Colors.black),
                       ),
                     ),
                   ),
@@ -222,35 +188,16 @@ class _SearchPageState extends State<SearchPage> {
                       String _tvImageUrl = tvResults[index]["poster_path"];
                       String _tvTitle = tvResults[index]["name"];
                       String _tvOriginalTitle =
-                          !checkEmptyNull(tvResults[index]["original_name"])
-                              ? tvResults[index]["original_name"]
-                              : _tvTitle;
-                      String _tvReleaseYear = !checkEmptyNull(
-                              tvResults[index]["first_air_date"])
-                          ? " (" +
-                              DateTime.parse(tvResults[index]["first_air_date"])
-                                  .year
-                                  .toString() +
-                              ")"
+                          !checkEmptyNull(tvResults[index]["original_name"]) ? tvResults[index]["original_name"] : _tvTitle;
+                      String _tvReleaseYear = !checkEmptyNull(tvResults[index]["first_air_date"])
+                          ? " (" + DateTime.parse(tvResults[index]["first_air_date"]).year.toString() + ")"
                           : "";
-                      String _tvDescription =
-                          !checkEmptyNull(tvResults[index]["overview"])
-                              ? tvResults[index]["overview"]
-                              : "";
+                      String _tvDescription = !checkEmptyNull(tvResults[index]["overview"]) ? tvResults[index]["overview"] : "";
                       int _tvId = tvResults[index]["id"];
-                      double _tvVote =
-                          tvResults[index]["vote_average"].toDouble();
+                      double _tvVote = tvResults[index]["vote_average"].toDouble();
 
                       return getSearchItem(
-                          context,
-                          _tvId,
-                          _tvTitle,
-                          _tvOriginalTitle,
-                          _tvImageUrl,
-                          _tvReleaseYear,
-                          _tvDescription,
-                          _tvVote,
-                          true);
+                          context, _tvId, _tvTitle, _tvOriginalTitle, _tvImageUrl, _tvReleaseYear, _tvDescription, _tvVote, true);
                     },
                     itemCount: min(tvResults.length, 40),
                   ),
