@@ -15,6 +15,20 @@ class ApiRequests {
     lang != null ? this.lang = lang : this.lang = defaultLang ;
   }
 
+  Future<List<dynamic>> getDiscoverMovies(int page, String sortParameter, String sortDirection , bool nonImages) async{
+    return await receiveMovieInfo(
+    "https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=$lang&page=$page&sort_by=$sortParameter.$sortDirection&include_adult=false&include_video=false",
+    nonImages);
+  }
+
+  Future<List<dynamic>> getDiscoverShows(int page, String sortParameter, String sortDirection , bool nonImages) async{
+    //SortParameter = popularity, release_date, revenue, primary_release_date, original_title, vote_average, vote_count
+    //SortDirection = desc, asc
+    return await receiveShowInfo(
+    "https://api.themoviedb.org/3/discover/tv?api_key=$apiKey&language=$lang&page=$page&sort_by=$sortParameter.$sortDirection&include_adult=false&include_video=false",
+    nonImages);
+  }
+
   Future<List<dynamic>> getWeekAirShows(String region, int page, bool nonImages) async{
     return await receiveShowInfo(
       "https://api.themoviedb.org/3/tv/on_the_air?api_key=$apiKey&language=$lang&page=$page", 
@@ -109,7 +123,7 @@ Future<List<dynamic>> receiveShowInfo(String url, bool includeNonImages) async{
       "image" : results[i]["poster_path"],
       "vote" : results[i]["vote_average"],
       "description" : results[i]["overview"],
-      "release_year" : DateTime.parse(results[i]["first_air_date"]).year.toString()
+      "release_year" : (results[i]["first_air_date"] != "" && results[i]["first_air_date"] != null) ? DateTime.parse(results[i]["first_air_date"]).year.toString() : ""
     });
   }
 
@@ -130,9 +144,9 @@ Future<List<dynamic>> receiveMovieInfo(String url, bool includeNonImages) async{
       "original_title" : results[i]["original_title"],
       "id" : results[i]["id"],
       "image" : results[i]["poster_path"],
-      "vote" : results[i]["vote_average"],
+      "vote" : results[i]["vote_average"].toDouble(),
       "description" : results[i]["overview"],
-      "release_year" : DateTime.parse(results[i]["release_date"]).year.toString()
+      "release_year" : (results[i]["release_date"] != "" && results[i]["release_date"] != null) ? DateTime.parse(results[i]["release_date"]).year.toString() : ""
     });
   }
 

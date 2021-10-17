@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test_app/pages/searchPage.dart';
-
+import 'package:get/get.dart';
+import 'package:test_app/controllers/homepage_controller.dart';
 import 'package:test_app/pages/fragments/firstFragment.dart';
 import 'package:test_app/pages/fragments/secondFragment.dart';
 import 'package:test_app/pages/fragments/thirdFragment.dart';
+import 'package:test_app/request/api-request.dart';
 
 class DrawerItem {
   String title;
@@ -14,23 +16,23 @@ class DrawerItem {
 
 class HomePage extends StatefulWidget {
 
-  
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
 
+  HomePageController homeController = Get.put(HomePageController());
+
+  ApiRequests apiRequests = Get.put(ApiRequests());
+
   final drawerItems = [
-    new DrawerItem("Fragment 1", Icons.rss_feed),
-    new DrawerItem("Fragment 2", Icons.local_pizza),
-    new DrawerItem("Fragment 3", Icons.info)
+    new DrawerItem("Domů", Icons.house_rounded),
+    new DrawerItem("Filmy", Icons.movie_creation_rounded),
+    new DrawerItem("Seriály", Icons.tv_rounded)
   ];
 
-  int _selectedDrawerIndex = 0;
-
-  _getDrawerItemWidget(int pos) {
+  getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
         return new FirstFragment();
@@ -44,8 +46,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  _onSelectItem(int index) {
-    setState(() => _selectedDrawerIndex = index);
+  onSelectItem(int index) {
+    homeController.fragmentIndex.value = index;
+    homeController.fetchNewData(index);
     Navigator.of(context).pop(); // close the drawer
   }
 
@@ -56,11 +59,15 @@ class _HomePageState extends State<HomePage> {
     for (var i = 0; i < drawerItems.length; i++) {
       var d = drawerItems[i];
       drawerOptions.add(
-        new ListTile(
-          leading: new Icon(d.icon),
-          title: new Text(d.title),
-          selected: i == _selectedDrawerIndex,
-          onTap: () => _onSelectItem(i),
+        GetX<HomePageController>(
+          builder: (controller) {
+            return new ListTile(
+              leading: new Icon(d.icon),
+              title: new Text(d.title),
+              selected: i == controller.fragmentIndex.value,
+              onTap: () => onSelectItem(i),
+            );
+          }
         )
       );
     }
@@ -99,7 +106,11 @@ class _HomePageState extends State<HomePage> {
                     icon: Icon(Icons.search)),
               ],
             ),
-            body: _getDrawerItemWidget(_selectedDrawerIndex),
+            body: GetX<HomePageController>(
+              builder: (controller){
+                return getDrawerItemWidget(controller.fragmentIndex.value);
+              }
+            )
           );
         }));
   }

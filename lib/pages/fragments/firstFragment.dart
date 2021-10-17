@@ -33,6 +33,7 @@ class FirstFragment extends StatelessWidget {
                         interval: "day",
                         offset: _offset,
                         height: _screenHeight / 4,
+                        moreButton: true,
                       ),
                     ),
                     _divider,
@@ -42,6 +43,7 @@ class FirstFragment extends StatelessWidget {
                         interval: "day",
                         offset: _offset,
                         height: _screenHeight / 4,
+                        moreButton: true,
                       ),
                     ),
                     _divider,
@@ -51,6 +53,7 @@ class FirstFragment extends StatelessWidget {
                         region: "cz",
                         offset: _offset,
                         height: _screenHeight / 4,
+                        moreButton: true,
                       )
                     ),
                     _divider,
@@ -60,6 +63,7 @@ class FirstFragment extends StatelessWidget {
                         region: "cz",
                         offset: _offset,
                         height: _screenHeight / 4,
+                        moreButton: true,
                       )
                     ),
                   ],

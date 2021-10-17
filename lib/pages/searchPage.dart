@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:test_app/functions/regex.dart';
 import 'package:test_app/functions/data.dart';
@@ -96,10 +97,10 @@ class _SearchPageState extends State<SearchPage> {
 
       text = inputYear != null ? text.replaceAll(inputYear, "") : text;
 
-      List<dynamic> movieResults = await ApiRequests().getSearchMovies(text, inputYear, 1, true);
+      List<dynamic> movieResults = await Get.find<ApiRequests>().getSearchMovies(text, inputYear, 1, false);
 
       //Uri tvUrl = Uri.parse('https://api.themoviedb.org/3/search/tv?api_key=ad5cdc02df63e67fa695781a8a3cf3fc&language=cs-CZ&page=1&query=$text&include_adult=false&first_air_date_year=$inputYear');
-      List<dynamic> tvResults = await ApiRequests().getSearchShows(text, inputYear, 1, true);
+      List<dynamic> tvResults = await Get.find<ApiRequests>().getSearchShows(text, inputYear, 1, false);
 
       return OrientationBuilder(builder: (context, orientation) {
         return SingleChildScrollView(
