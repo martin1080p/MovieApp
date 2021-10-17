@@ -121,7 +121,7 @@ Future<List<dynamic>> receiveShowInfo(String url, bool includeNonImages) async{
       "original_title" : results[i]["original_name"],
       "id" : results[i]["id"],
       "image" : results[i]["poster_path"],
-      "vote" : results[i]["vote_average"],
+      "vote" : results[i]["vote_average"].toDouble(),
       "description" : results[i]["overview"],
       "release_year" : (results[i]["first_air_date"] != "" && results[i]["first_air_date"] != null) ? DateTime.parse(results[i]["first_air_date"]).year.toString() : ""
     });
