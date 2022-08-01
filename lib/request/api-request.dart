@@ -15,17 +15,17 @@ class ApiRequests {
     lang != null ? this.lang = lang : this.lang = defaultLang ;
   }
 
-  Future<List<dynamic>> getDiscoverMovies(int page, String sortParameter, String sortDirection , bool nonImages) async{
+  Future<List<dynamic>> getDiscoverMovies(String region, int page, String sortParameter, String sortDirection, int minimumVoteCount, bool nonImages) async{
     return await receiveMovieInfo(
-    "https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=$lang&page=$page&sort_by=$sortParameter.$sortDirection&include_adult=false&include_video=false",
+    "https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=$lang&page=$page&sort_by=$sortParameter.$sortDirection&include_adult=false&include_video=false&vote_count.gte=$minimumVoteCount&region=$region",
     nonImages);
   }
 
-  Future<List<dynamic>> getDiscoverShows(int page, String sortParameter, String sortDirection , bool nonImages) async{
+  Future<List<dynamic>> getDiscoverShows(String region, int page, String sortParameter, String sortDirection, int minimumVoteCount, bool nonImages) async{
     //SortParameter = popularity, release_date, revenue, primary_release_date, original_title, vote_average, vote_count
     //SortDirection = desc, asc
     return await receiveShowInfo(
-    "https://api.themoviedb.org/3/discover/tv?api_key=$apiKey&language=$lang&page=$page&sort_by=$sortParameter.$sortDirection&include_adult=false&include_video=false",
+    "https://api.themoviedb.org/3/discover/tv?api_key=$apiKey&language=$lang&page=$page&sort_by=$sortParameter.$sortDirection&include_adult=false&include_video=false&vote_count.gte=$minimumVoteCount&region=$region",
     nonImages);
   }
 

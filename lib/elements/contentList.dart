@@ -6,6 +6,7 @@ import 'package:test_app/pages/sourcePage.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
+import 'package:test_app/variables/globals.dart' as globals;
 
 
 // ignore: must_be_immutable
@@ -35,6 +36,8 @@ class ContentList extends StatelessWidget {
             children: [
               InkWell(
                 onTap: (){
+                  globals.actualSelectedEpisode = 1;
+                  globals.actualSelectedSeason = 1;
                   Navigator.push(
                     context,
                     MaterialPageRoute(

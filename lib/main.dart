@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:test_app/pages/homePage.dart';
-
-void main({debugShowCheckedModeBanner = true}) {
+void main({debugShowCheckedModeBanner = true})async{
+  await GetStorage.init();
   runApp(MaterialApp(
     theme: ThemeData(
       brightness: Brightness.dark,
@@ -14,5 +15,8 @@ void main({debugShowCheckedModeBanner = true}) {
     home: HomePage(),
   ));
 }
+
+//TODO: Watch later
+//TODO: Nedávno sledováno
 
 

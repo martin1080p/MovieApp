@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:test_app/pages/fragments/fourthFragment.dart';
 import 'package:test_app/pages/searchPage.dart';
 import 'package:get/get.dart';
 import 'package:test_app/controllers/homepage_controller.dart';
@@ -8,10 +10,22 @@ import 'package:test_app/pages/fragments/secondFragment.dart';
 import 'package:test_app/pages/fragments/thirdFragment.dart';
 import 'package:test_app/request/api-request.dart';
 
-class DrawerItem {
+class TopDrawerItem {
   String title;
   IconData icon;
-  DrawerItem(this.title, this.icon);
+  TopDrawerItem(this.title, this.icon);
+}
+
+class MiddleItem {
+  String title;
+  IconData icon;
+  MiddleItem(this.title, this.icon);
+}
+
+class BottomItem {
+  String title;
+  IconData icon;
+  BottomItem(this.title, this.icon);
 }
 
 class HomePage extends StatefulWidget {
@@ -27,9 +41,17 @@ class _HomePageState extends State<HomePage> {
   ApiRequests apiRequests = Get.put(ApiRequests());
 
   final drawerItems = [
-    new DrawerItem("Domů", Icons.house_rounded),
-    new DrawerItem("Filmy", Icons.movie_creation_rounded),
-    new DrawerItem("Seriály", Icons.tv_rounded)
+    new TopDrawerItem("Domů", Icons.house_rounded),
+    new TopDrawerItem("Filmy", Icons.movie_creation_rounded),
+    new TopDrawerItem("Seriály", Icons.tv_rounded)
+  ];
+
+  final middleItems = [
+    new BottomItem("Moje Historie", Icons.history_rounded),
+  ];
+
+  final bottomItems = [
+    new BottomItem("DMCA", Icons.lock_outline_rounded)
   ];
 
   getDrawerItemWidget(int pos) {
@@ -40,15 +62,23 @@ class _HomePageState extends State<HomePage> {
         return new SecondFragment();
       case 2:
         return new ThirdFragment();
+      case 3:
+        return new FourthFragment();
 
       default:
         return new Text("Error");
     }
   }
 
-  onSelectItem(int index) {
+  onSelectTopItem(int index) {
     homeController.fragmentIndex.value = index;
     homeController.fetchNewData(index);
+    Navigator.of(context).pop(); // close the drawer
+  }
+
+  onSelectMiddleItem(int index) {
+    homeController.fragmentIndex.value = index;
+    
     Navigator.of(context).pop(); // close the drawer
   }
 
@@ -65,10 +95,38 @@ class _HomePageState extends State<HomePage> {
               leading: new Icon(d.icon),
               title: new Text(d.title),
               selected: i == controller.fragmentIndex.value,
-              onTap: () => onSelectItem(i),
+              onTap: () => onSelectTopItem(i),
             );
           }
         )
+      );
+    }
+
+    List<Widget> middleOptions = [];
+    for (var i = 0; i < middleItems.length; i++) {
+      var b = middleItems[i];
+      middleOptions.add(
+        ListTile(
+              leading: new Icon(b.icon),
+              title: new Text(b.title),
+              onTap: () {
+                onSelectMiddleItem(i + 3);
+              },
+            )
+      );
+    }
+
+    List<Widget> bottomOptions = [];
+    for (var i = 0; i < bottomItems.length; i++) {
+      var b = bottomItems[i];
+      bottomOptions.add(
+        ListTile(
+              leading: new Icon(b.icon),
+              title: new Text(b.title),
+              onTap: () => {
+
+              },
+            )
       );
     }
 
@@ -81,13 +139,29 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Theme.of(context).primaryColor,
             drawer: Drawer(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  UserAccountsDrawerHeader(
-                    accountName: Text("Martin Fanta"),
-                    accountEmail: null,
+                  Column(
+                    children: [
+                      Container(
+                        color: Theme.of(context).cardColor,
+                        height: 200,
+                        child: SvgPicture.asset(
+                          "assets/logo.svg"
+                        ),
+                      ),
+                      Column(
+                        children: drawerOptions,
+                      ),
+                    ],
                   ),
                   Column(
-                    children: drawerOptions,
+                    children: 
+                      middleOptions +
+                      [
+                        Divider()
+                        ] +
+                      bottomOptions,
                   )
                 ],
               ),

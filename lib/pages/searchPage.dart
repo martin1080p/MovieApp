@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:test_app/functions/regex.dart';
 import 'package:test_app/functions/data.dart';
 import 'package:sticky_headers/sticky_headers.dart';

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:test_app/controllers/homepage_controller.dart';
 import 'package:test_app/elements/roundedContainer.dart';
 import 'package:test_app/pages/sourcePage.dart';
+import 'package:test_app/variables/globals.dart' as globals;
 
 class ThirdFragment extends StatefulWidget {
 
@@ -147,6 +148,8 @@ class _ThirdFragmentState extends State<ThirdFragment> {
                                     List<dynamic> data = controller.fetchedData;
                                     return InkWell(
                                       onTap: (){
+                                        globals.actualSelectedEpisode = 1;
+                                        globals.actualSelectedSeason = 1;
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(

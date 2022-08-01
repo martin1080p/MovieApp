@@ -15,6 +15,8 @@ class HomePageController extends GetxController{
   bool isNextLoading = false;
   bool isNewLoading = false;
 
+  String region = "cz";
+
   //1 = movies
   //2 = shows
 
@@ -30,18 +32,22 @@ class HomePageController extends GetxController{
     switch(activeFragment){
       case 1:
         fetchedData = await Get.find<ApiRequests>().getDiscoverMovies(
+          region,
           1,
           sortParameter.value,
           sortDirection.value,
+          1000,
           true
         );
         break;
       case 2:
       //show
         fetchedData = await Get.find<ApiRequests>().getDiscoverShows(
+          region,
           1,
           sortParameter.value,
           sortDirection.value,
+          1000,
           true
         );
         break;
@@ -64,18 +70,22 @@ class HomePageController extends GetxController{
     switch(activeFragment){
       case 1:
         fetchedData.addAll(await Get.find<ApiRequests>().getDiscoverMovies(
+          region,
           pageIndex,
           sortParameter.value,
           sortDirection.value,
+          1000,
           true
         ));
         break;
       case 2:
       //show
         fetchedData.addAll(await Get.find<ApiRequests>().getDiscoverShows(
+          region,
           pageIndex,
           sortParameter.value,
           sortDirection.value,
+          1000,
           true
         ));
         break;

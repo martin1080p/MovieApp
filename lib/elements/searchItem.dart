@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/pages/sourcePage.dart';
+import 'package:test_app/variables/globals.dart' as globals;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 Widget getSearchItem(BuildContext context, int _mediaId, String _mediaTitle, String _mediaOriginalTitle, String _mediaImageUrl,
@@ -12,6 +13,8 @@ Widget getSearchItem(BuildContext context, int _mediaId, String _mediaTitle, Str
 
   return InkWell(
     onTap: () {
+      globals.actualSelectedEpisode = 1;
+      globals.actualSelectedSeason = 1;
       Navigator.push(
         context,
         MaterialPageRoute(

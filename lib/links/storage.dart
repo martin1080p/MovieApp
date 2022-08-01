@@ -3,13 +3,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:chaleno/chaleno.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:test_app/pages/myVideoPlayer.dart';
 
 import 'package:test_app/variables/globals.dart' as globals;
 
+// ignore: non_constant_identifier_names
 RegExp dabing_regex = RegExp(r"(?:[^a-ž]|^)(?:cz|cze|česky|český|dabing|czdab)(?:[^a-ž]|$)", caseSensitive: false, multiLine: true);
+// ignore: non_constant_identifier_names
 RegExp subtitle_regex = RegExp(r"(?:[^a-Ž]|^|cz|cze)(?:titulky|tit)(?:[^a-Ž]|$)", caseSensitive: false, multiLine: true);
+// ignore: non_constant_identifier_names
 RegExp high_regex = RegExp(r"(?:[^a-ž]|^)(?:1080p|2160p|4k|uhd)", caseSensitive: false, multiLine: true);
+// ignore: non_constant_identifier_names
 RegExp diacritics_regex = RegExp(r'[À-ž]', caseSensitive: false, multiLine: true);
 
 Future generateStorageLinks(String searchTerm, String originalSearchTerm, Function setState,
@@ -87,6 +93,7 @@ Future generateStorageLinks(String searchTerm, String originalSearchTerm, Functi
               return InkWell(
                 key: Key(keyPrefix + index.toString()),
                 onTap: () {
+                  addToStorage();
                   createVideoDialog(context, prefferedList[index]["link"]);
                 },
                 child: Container(
@@ -147,6 +154,7 @@ Future generateStorageLinks(String searchTerm, String originalSearchTerm, Functi
               return InkWell(
                 key: Key(keyPrefix + index.toString()),
                 onTap: () {
+                  addToStorage();
                   createVideoDialog(context, originalList[index]["link"]);
                 },
                 child: Container(
@@ -292,4 +300,25 @@ List<String> getHrefListOfElements(List<Result> elements) {
     hrefList.add('https://prehraj.to' + element.href);
   }
   return hrefList;
+}
+
+void addToStorage(){
+  List<dynamic> watchedList = GetStorage().read('watched_list');
+  if(watchedList == null)
+    watchedList = [];
+  
+  watchedList.insert(0,
+    {
+      "title" : globals.activeTitle,
+      "image" : globals.activeImageUrl,
+      "id" : globals.activeId,
+      "description" : globals.activeDescription,
+      "is_tv" : globals.activeIsTV,
+      "season" : globals.actualSelectedSeason,
+      "episode" : globals.actualSelectedEpisode,
+      "time_now" : DateFormat('hh:mm').format(DateTime.now()),
+      "date_now" : DateFormat('dd/MM/yyyy').format(DateTime.now())
+    }
+  );
+  GetStorage().write('watched_list', watchedList);
 }
