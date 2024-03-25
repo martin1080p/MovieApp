@@ -1,7 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:test_app/pages/homePage.dart';
-void main({debugShowCheckedModeBanner = true})async{
+
+void main({debugShowCheckedModeBanner = true}) async {
   await GetStorage.init();
   runApp(MaterialApp(
     theme: ThemeData(

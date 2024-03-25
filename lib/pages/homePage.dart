@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,13 +31,11 @@ class BottomItem {
 }
 
 class HomePage extends StatefulWidget {
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
   HomePageController homeController = Get.put(HomePageController());
 
   ApiRequests apiRequests = Get.put(ApiRequests());
@@ -50,9 +50,7 @@ class _HomePageState extends State<HomePage> {
     new BottomItem("Moje Historie", Icons.history_rounded),
   ];
 
-  final bottomItems = [
-    new BottomItem("DMCA", Icons.lock_outline_rounded)
-  ];
+  final bottomItems = [new BottomItem("DMCA", Icons.lock_outline_rounded)];
 
   getDrawerItemWidget(int pos) {
     switch (pos) {
@@ -78,56 +76,45 @@ class _HomePageState extends State<HomePage> {
 
   onSelectMiddleItem(int index) {
     homeController.fragmentIndex.value = index;
-    
+
     Navigator.of(context).pop(); // close the drawer
   }
 
   @override
   Widget build(BuildContext context) {
-
     List<Widget> drawerOptions = [];
     for (var i = 0; i < drawerItems.length; i++) {
       var d = drawerItems[i];
-      drawerOptions.add(
-        GetX<HomePageController>(
-          builder: (controller) {
-            return new ListTile(
-              leading: new Icon(d.icon),
-              title: new Text(d.title),
-              selected: i == controller.fragmentIndex.value,
-              onTap: () => onSelectTopItem(i),
-            );
-          }
-        )
-      );
+      drawerOptions.add(GetX<HomePageController>(builder: (controller) {
+        return new ListTile(
+          leading: new Icon(d.icon),
+          title: new Text(d.title),
+          selected: i == controller.fragmentIndex.value,
+          onTap: () => onSelectTopItem(i),
+        );
+      }));
     }
 
     List<Widget> middleOptions = [];
     for (var i = 0; i < middleItems.length; i++) {
       var b = middleItems[i];
-      middleOptions.add(
-        ListTile(
-              leading: new Icon(b.icon),
-              title: new Text(b.title),
-              onTap: () {
-                onSelectMiddleItem(i + 3);
-              },
-            )
-      );
+      middleOptions.add(ListTile(
+        leading: new Icon(b.icon),
+        title: new Text(b.title),
+        onTap: () {
+          onSelectMiddleItem(i + 3);
+        },
+      ));
     }
 
     List<Widget> bottomOptions = [];
     for (var i = 0; i < bottomItems.length; i++) {
       var b = bottomItems[i];
-      bottomOptions.add(
-        ListTile(
-              leading: new Icon(b.icon),
-              title: new Text(b.title),
-              onTap: () => {
-
-              },
-            )
-      );
+      bottomOptions.add(ListTile(
+        leading: new Icon(b.icon),
+        title: new Text(b.title),
+        onTap: () => {},
+      ));
     }
 
     return Shortcuts(
@@ -136,56 +123,46 @@ class _HomePageState extends State<HomePage> {
         },
         child: OrientationBuilder(builder: (BuildContext context, Orientation orientation) {
           return Scaffold(
-            backgroundColor: Theme.of(context).primaryColor,
-            drawer: Drawer(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        color: Theme.of(context).cardColor,
-                        height: 200,
-                        child: SvgPicture.asset(
-                          "assets/logo.svg"
+              backgroundColor: Theme.of(context).primaryColor,
+              drawer: Drawer(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Container(
+                          color: Theme.of(context).cardColor,
+                          height: 200,
+                          child: SvgPicture.asset("assets/logo.svg"),
                         ),
-                      ),
-                      Column(
-                        children: drawerOptions,
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: 
-                      middleOptions +
-                      [
-                        Divider()
-                        ] +
-                      bottomOptions,
-                  )
+                        Column(
+                          children: drawerOptions,
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: middleOptions + [Divider()] + bottomOptions,
+                    )
+                  ],
+                ),
+              ),
+              appBar: AppBar(
+                elevation: 0,
+                iconTheme: IconThemeData(color: Theme.of(context).accentColor),
+                actions: <Widget>[
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SearchPage()),
+                        );
+                      },
+                      icon: Icon(Icons.search)),
                 ],
               ),
-            ),
-            appBar: AppBar(
-              elevation: 0,
-              iconTheme: IconThemeData(color: Theme.of(context).accentColor),
-              actions: <Widget>[
-                IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SearchPage()),
-                      );
-                    },
-                    icon: Icon(Icons.search)),
-              ],
-            ),
-            body: GetX<HomePageController>(
-              builder: (controller){
+              body: GetX<HomePageController>(builder: (controller) {
                 return getDrawerItemWidget(controller.fragmentIndex.value);
-              }
-            )
-          );
+              }));
         }));
   }
 }
