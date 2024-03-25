@@ -130,10 +130,26 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Column(
                       children: [
-                        Container(
-                          color: Theme.of(context).cardColor,
-                          height: 200,
-                          child: SvgPicture.asset("assets/logo.svg"),
+                        Stack(
+                          alignment: AlignmentDirectional.bottomCenter,
+                          children: [
+                            Container(
+                              color: Theme.of(context).cardColor,
+                              height: 200,
+                              child: SvgPicture.asset("assets/logo.svg"),
+                            ),
+                            Container(
+                              child: Text(
+                                'Made with ❤ by Martin Fanta',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontFamily: 'DINPro',
+                                ),
+                              ),
+                              margin: EdgeInsets.only(bottom: 10),
+                            ),
+                          ],
                         ),
                         Column(
                           children: drawerOptions,
