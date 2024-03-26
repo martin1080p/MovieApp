@@ -11,6 +11,7 @@ import 'package:test_app/pages/fragments/firstFragment.dart';
 import 'package:test_app/pages/fragments/secondFragment.dart';
 import 'package:test_app/pages/fragments/thirdFragment.dart';
 import 'package:test_app/request/api-request.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class TopDrawerItem {
   String title;
@@ -40,6 +41,8 @@ class _HomePageState extends State<HomePage> {
 
   ApiRequests apiRequests = Get.put(ApiRequests());
 
+  WebViewController webViewController;
+
   final drawerItems = [
     new TopDrawerItem("Domů", Icons.house_rounded),
     new TopDrawerItem("Filmy", Icons.movie_creation_rounded),
@@ -50,7 +53,7 @@ class _HomePageState extends State<HomePage> {
     new BottomItem("Moje Historie", Icons.history_rounded),
   ];
 
-  final bottomItems = [new BottomItem("DMCA", Icons.lock_outline_rounded)];
+  final bottomItems = [];
 
   getDrawerItemWidget(int pos) {
     switch (pos) {
@@ -151,6 +154,29 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
+                        //TODO: remove
+                        /*
+                        Offstage(
+                          child: Container(
+                            height: 100,
+                            child: WebView(
+                              key: Key('webview'),
+                              initialUrl: 'https://prehraj.to/titanic-1997-cz/6601eaa7b1f0f',
+                              javascriptMode: JavascriptMode.unrestricted,
+                              onWebViewCreated: (controller) {
+                                webViewController = controller;
+                              },
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            Map<String, dynamic> sources =
+                                jsonDecode(await webViewController.evaluateJavascript('sources'));
+                            print(sources);
+                          },
+                          child: Text('Fetch'),
+                        ),*/
                         Column(
                           children: drawerOptions,
                         ),
