@@ -7,7 +7,6 @@ import 'package:test_app/elements/roundedContainer.dart';
 import 'package:test_app/functions/cast.dart';
 import 'package:test_app/links/storage.dart';
 import 'package:test_app/alerts/episodeSelection.dart';
-import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:expandable_text/expandable_text.dart';
 
@@ -37,24 +36,18 @@ class SourcePage extends StatefulWidget {
 }
 
 class _SourcePageState extends State<SourcePage> {
+  bool playButtonFocused = true;
+
   @protected
   void initState() {
     super.initState();
   }
 
   void dispose() {
-    BackButtonInterceptor.removeAll();
     super.dispose();
   }
 
   Widget build(BuildContext context) {
-    bool navigatorPop(bool stopDefaultButtonEvent, RouteInfo info) {
-      Navigator.pop(context); // Do some stuff.
-      return true;
-    }
-
-    BackButtonInterceptor.add(navigatorPop);
-
     double _screenWidth = MediaQuery.of(context).size.width;
     double _screenHeight = MediaQuery.of(context).size.height;
 
@@ -129,21 +122,36 @@ class _SourcePageState extends State<SourcePage> {
                   Positioned(
                     bottom: globals.activeOffset,
                     right: globals.activeOffset / 2,
-                    child: RawMaterialButton(
-                      autofocus: !globals.activeIsTV,
-                      onPressed: () {
-                        //addToStorage();
-                        createVideoDialog(context, globals.firstLink);
-                      },
-                      elevation: 2.0,
-                      fillColor: Theme.of(context).buttonColor,
-                      child: Icon(
-                        Icons.play_arrow,
-                        size: 35.0,
-                      ),
-                      padding: EdgeInsets.all(15.0),
-                      shape: CircleBorder(),
-                    ),
+                    child: StatefulBuilder(builder: (context, setState) {
+                      return RawMaterialButton(
+                        autofocus: !globals.activeIsTV,
+                        onPressed: () {
+                          //addToStorage();
+                          createVideoDialog(context, globals.firstLink);
+                          //createVideoDialog(context, globals.firstLink);
+                        },
+                        elevation: 2.0,
+                        fillColor: Theme.of(context).buttonColor,
+                        child: Focus(
+                          autofocus: true,
+                          onFocusChange: (isFocused) {
+                            setState(() {
+                              playButtonFocused = isFocused;
+                            });
+                          },
+                          child: Icon(
+                            Icons.play_arrow,
+                            size: 35.0,
+                          ),
+                        ),
+                        padding: EdgeInsets.all(15.0),
+                        shape: CircleBorder(
+                          side: BorderSide(
+                            color: playButtonFocused ? Colors.white : Colors.transparent,
+                          ),
+                        ),
+                      );
+                    }),
                   )
                 ],
               ),

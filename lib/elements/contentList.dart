@@ -1,12 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:test_app/controllers/homepage_controller.dart';
+import 'package:test_app/elements/contentItem.dart';
 import 'package:test_app/request/api-request.dart';
-import 'package:test_app/pages/sourcePage.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:get/get.dart';
-import 'package:test_app/variables/globals.dart' as globals;
 
 // ignore: must_be_immutable
 class ContentList extends StatelessWidget {
@@ -34,69 +32,45 @@ class ContentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.separated(
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        itemCount: mediaDatas.length,
-        itemBuilder: (BuildContext context, int i) {
-          return Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  globals.actualSelectedEpisode = 1;
-                  globals.actualSelectedSeason = 1;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SourcePage(
-                            source: SourceSubject(
-                                mediaDatas[i]["id"],
-                                mediaDatas[i]["title"],
-                                mediaDatas[i]["original_title"],
-                                mediaDatas[i]["image"],
-                                mediaDatas[i]["release_year"],
-                                mediaDatas[i]["description"],
-                                mediaDatas[i]["vote"],
-                                isTv,
-                                offset))),
-                  );
-                },
-                child: CachedNetworkImage(
-                  fadeInDuration: Duration.zero,
-                  fadeOutDuration: Duration.zero,
-                  imageUrl: 'https://image.tmdb.org/t/p/w500' + mediaDatas[i]["image"],
-                  placeholder: (context, url) =>
-                      ShimmerItem(height, Theme.of(context).primaryColor),
-                  //errorWidget: (context, url, error) => ContentListPlaceholder(offset, height),
-                ),
-              ),
-              moreButton && i == mediaDatas.length - 1
-                  ? InkWell(
-                      onTap: () {
-                        homeController.sortParameter.value = sortParameter;
-                        homeController.sortDirection.value = "desc";
-                        homeController.fragmentIndex.value = fragmentIndex;
-                        homeController.fetchNewData(fragmentIndex);
-                      },
-                      child: Container(
-                        margin: EdgeInsets.fromLTRB(offset / 2, offset / 4, offset / 2, offset / 4),
-                        padding: EdgeInsets.all(offset / 2),
-                        child: Center(child: Text("Více")),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                      ),
-                    )
-                  : Container()
-            ],
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return Container(
-            width: offset / 2,
-          );
-        },
+    return FocusTraversalGroup(
+      child: Center(
+        child: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          itemCount: mediaDatas.length,
+          itemBuilder: (BuildContext context, int i) {
+            return Row(
+              children: [
+                ContentItem(
+                    mediaData: mediaDatas[i], index: i, isTv: isTv, offset: offset, height: height),
+                moreButton && i == mediaDatas.length - 1
+                    ? InkWell(
+                        onTap: () {
+                          homeController.sortParameter.value = sortParameter;
+                          homeController.sortDirection.value = "desc";
+                          homeController.fragmentIndex.value = fragmentIndex;
+                          homeController.fetchNewData(fragmentIndex);
+                        },
+                        child: Container(
+                          margin:
+                              EdgeInsets.fromLTRB(offset / 2, offset / 4, offset / 2, offset / 4),
+                          padding: EdgeInsets.all(offset / 2),
+                          child: Center(child: Text("Více")),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                        ),
+                      )
+                    : Container()
+              ],
+            );
+          }, /*
+          separatorBuilder: (BuildContext context, int index) {
+            return Container(
+              width: offset / 4,
+            );
+          },*/
+        ),
       ),
     );
   }
@@ -225,7 +199,14 @@ class TrendingMoviesList extends StatelessWidget {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return ContentList(
-                    snapshot.data, offset, height, false, moreButton, 1, "popularity");
+                  snapshot.data,
+                  offset,
+                  height,
+                  false,
+                  moreButton,
+                  1,
+                  "popularity",
+                );
               }
               return ContentListPlaceholder(offset, height);
             },

@@ -53,8 +53,8 @@ List<BetterPlayerSubtitlesSource> subtitlesGenerator(List<dynamic> subtitles) {
   for (int i = 0; i < subtitles.length; i++) {
     sourceList.add(BetterPlayerSubtitlesSource(
         type: BetterPlayerSubtitlesSourceType.network,
-        name: subtitles[i]["label"],
-        urls: [subtitles[i]["file"]]));
+        name: subtitles[i]['label'],
+        urls: [subtitles[i]['src']]));
   }
   return sourceList;
 }

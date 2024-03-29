@@ -1,16 +1,21 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:chaleno/chaleno.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:test_app/pages/myVideoPlayer.dart';
+import 'package:test_app/pages/moviePlayer.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart' as html;
 
 import 'package:http/http.dart' as http;
 import 'package:test_app/variables/globals.dart' as globals;
+import 'package:test_app/video_fetchers/storage.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 // ignore: non_constant_identifier_names
 RegExp dabing_regex = RegExp(r"(?:[^a-ž]|^)(?:cz|cze|česky|český|dabing|czdab)(?:[^a-ž]|$)",
@@ -267,14 +272,91 @@ Container getSourceFlags(double _offset, Widget flagWidget) {
   );
 }
 
-Future<Widget> createVideoDialog(BuildContext context, String link) async {
+/*
+Future<void> createVideoDialog(BuildContext context, String link) async {
   globals.activeLink = link;
   showDialog(
       context: context,
       builder: (context) {
-        return MyVideoPlayer();
+        return MoviePlayer();
       });
-  return (Container());
+}*/
+
+Future<void> createVideoDialog(BuildContext context, String link) async {
+  Map<String, dynamic> sources;
+  bool loaded = false;
+  bool error = false;
+
+  Map<String, String> resolutions;
+  String initialSource;
+  List<BetterPlayerSubtitlesSource> subtitles;
+  double aspectRatio;
+  bool isTV;
+
+  showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          WebViewController controller;
+
+          if (!loaded && !error) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
+                Offstage(
+                  child: Container(
+                    height: 50,
+                    child: WebView(
+                      javascriptMode: JavascriptMode.unrestricted,
+                      initialUrl: link,
+                      onWebViewCreated: (webViewController) {
+                        controller = webViewController;
+                      },
+                      onPageFinished: (url) async {
+                        sources = jsonDecode(await controller.evaluateJavascript('sources'));
+
+                        if (sources == null) {
+                          setState(() {
+                            loaded = true;
+                            error = true;
+                          });
+                        } else {
+                          resolutions = Map.fromIterable(sources['videos'],
+                              key: (e) => e['label'], value: (e) => e['src']);
+                          initialSource = sources['videos'][0]['src'];
+                          subtitles = subtitlesGenerator(sources['tracks']);
+                          isTV = await isTvDevice();
+                          aspectRatio = await getAspectRatio(initialSource);
+
+                          setState(() {
+                            loaded = true;
+                            error = false;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            );
+          } else if (loaded && error) {
+            return Text('Chyba načítání zdrojů');
+          } else if (loaded && !error) {
+            return MoviePlayer(
+              initialSource: initialSource,
+              resolutions: resolutions,
+              substitles: subtitles,
+              aspectRatio: aspectRatio,
+              isTV: isTV,
+            );
+          }
+
+          return Container();
+        });
+      });
 }
 
 List<String> getTextListOfElements(List<html.Element> elements) {

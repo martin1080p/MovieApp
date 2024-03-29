@@ -5,12 +5,14 @@ import 'package:test_app/elements/roundedContainer.dart';
 class FirstFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     double _offset = 20.0;
     //double _screenWidth = MediaQuery.of(context).size.width;
     double _screenHeight = MediaQuery.of(context).size.height;
 
-    Widget _divider = Divider(height: 0, thickness: 2,);
+    Widget _divider = Divider(
+      height: 0,
+      thickness: 2,
+    );
 
     return Align(
       alignment: Alignment.topCenter,
@@ -24,7 +26,6 @@ class FirstFragment extends StatelessWidget {
             child: Align(
               alignment: Alignment.topCenter,
               child: SingleChildScrollView(
-                
                 child: Column(
                   children: [
                     Container(
@@ -48,24 +49,22 @@ class FirstFragment extends StatelessWidget {
                     ),
                     _divider,
                     Container(
-                      margin: EdgeInsets.only(top: _offset, bottom: _offset),
-                      child: TopMoviesList(
-                        region: "cz",
-                        offset: _offset,
-                        height: _screenHeight / 4,
-                        moreButton: true,
-                      )
-                    ),
+                        margin: EdgeInsets.only(top: _offset, bottom: _offset),
+                        child: TopMoviesList(
+                          region: "cz",
+                          offset: _offset,
+                          height: _screenHeight / 4,
+                          moreButton: true,
+                        )),
                     _divider,
                     Container(
-                      margin: EdgeInsets.only(top: _offset, bottom: _offset),
-                      child: TopShowsList(
-                        region: "cz",
-                        offset: _offset,
-                        height: _screenHeight / 4,
-                        moreButton: true,
-                      )
-                    ),
+                        margin: EdgeInsets.only(top: _offset, bottom: _offset),
+                        child: TopShowsList(
+                          region: "cz",
+                          offset: _offset,
+                          height: _screenHeight / 4,
+                          moreButton: true,
+                        )),
                   ],
                 ),
               ),
@@ -75,5 +74,4 @@ class FirstFragment extends StatelessWidget {
       ),
     );
   }
-
 }
