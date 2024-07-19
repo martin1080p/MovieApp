@@ -9,6 +9,7 @@ import 'package:test_app/links/storage.dart';
 import 'package:test_app/alerts/episodeSelection.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:expandable_text/expandable_text.dart';
+import 'package:test_app/request/api-request.dart';
 
 import 'package:test_app/variables/globals.dart' as globals;
 
@@ -77,234 +78,259 @@ class _SourcePageState extends State<SourcePage> {
           },
         ),
         backgroundColor: Theme.of(context).primaryColor,
-        body: SingleChildScrollView(
-          child: Container(
-              child: Column(
-            children: [
-              Stack(
-                alignment: AlignmentDirectional.bottomCenter,
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    child: Hero(
-                      tag: "image" + widget.source.id.toString(),
-                      child: Container(
-                        height: _screenHeight / 2.5,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.fitWidth,
-                            alignment: FractionalOffset.center,
-                            image: (globals.activeImageUrl != null
-                                ? NetworkImage(
-                                    "https://image.tmdb.org/t/p/original" + globals.activeImageUrl)
-                                : AssetImage('assets/empty_poster.jpg')),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      RoundedContainer(
-                        width: _screenWidth - globals.activeOffset,
-                        padding: EdgeInsets.fromLTRB(
-                            globals.activeOffset, globals.activeOffset, globals.activeOffset, 0),
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
-                        child: Text(
-                          widget.source.title,
-                          style: TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.bold, fontFamily: "DINPro"),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Positioned(
-                    bottom: globals.activeOffset,
-                    right: globals.activeOffset / 2,
-                    child: StatefulBuilder(builder: (context, setState) {
-                      return RawMaterialButton(
-                        autofocus: !globals.activeIsTV,
-                        onPressed: () {
-                          //addToStorage();
-                          createVideoDialog(context, globals.firstLink);
-                          //createVideoDialog(context, globals.firstLink);
-                        },
-                        elevation: 2.0,
-                        fillColor: Theme.of(context).buttonColor,
-                        child: Focus(
-                          autofocus: true,
-                          onFocusChange: (isFocused) {
-                            setState(() {
-                              playButtonFocused = isFocused;
-                            });
-                          },
-                          child: Icon(
-                            Icons.play_arrow,
-                            size: 35.0,
-                          ),
-                        ),
-                        padding: EdgeInsets.all(15.0),
-                        shape: CircleBorder(
-                          side: BorderSide(
-                            color: playButtonFocused ? Colors.white : Colors.transparent,
-                          ),
-                        ),
-                      );
-                    }),
-                  )
-                ],
-              ),
-              Column(
-                children: [
-                  RoundedContainer(
-                    width: _screenWidth - globals.activeOffset,
+        body: FutureBuilder<int>(
+            future: widget.source.isTV
+                ? () => int.parse(widget.source.releaseYear)
+                : ApiRequests().getMoviePremiereYear(globals.activeId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return SingleChildScrollView(
+                child: Container(
                     child: Column(
+                  children: [
+                    Stack(
+                      alignment: AlignmentDirectional.bottomCenter,
+                      clipBehavior: Clip.none,
                       children: [
                         Container(
-                          alignment: Alignment.centerLeft,
-                          margin: EdgeInsets.only(left: globals.activeOffset),
-                          child: Opacity(
-                            opacity: 0.5,
-                            child: Text(
-                              globals.activeYear.replaceAllMapped(RegExp(r"[()]"), (match) {
-                                return '';
-                              }),
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontFamily: "DINPro",
-                                height: 1.5,
+                          child: Hero(
+                            tag: 'image' + widget.source.id.toString(),
+                            child: Container(
+                              height: _screenHeight / 2.5,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  fit: BoxFit.fitWidth,
+                                  alignment: FractionalOffset.center,
+                                  image: (globals.activeImageUrl != null
+                                      ? NetworkImage('https://image.tmdb.org/t/p/original' +
+                                          globals.activeImageUrl)
+                                      : AssetImage('assets/empty_poster.jpg')),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                        Container(
-                          padding: EdgeInsets.fromLTRB(globals.activeOffset,
-                              globals.activeOffset / 2, globals.activeOffset, globals.activeOffset),
-                          child: Row(
-                            children: [
-                              Text(
-                                globals.activeVote.toString().substring(0, 3) + " ",
+                        Column(
+                          children: [
+                            RoundedContainer(
+                              width: _screenWidth - globals.activeOffset,
+                              padding: EdgeInsets.fromLTRB(globals.activeOffset,
+                                  globals.activeOffset, globals.activeOffset, 0),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
+                              child: Text(
+                                widget.source.title,
                                 style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 25,
                                     fontWeight: FontWeight.bold,
-                                    fontFamily: "DINPro",
-                                    color: Colors.amber),
+                                    fontFamily: 'DINPro'),
                               ),
-                              RatingBarIndicator(
-                                rating: globals.activeVote / 2,
-                                itemBuilder: (context, index) => Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          bottom: globals.activeOffset,
+                          right: globals.activeOffset / 2,
+                          child: StatefulBuilder(builder: (context, setState) {
+                            return RawMaterialButton(
+                              autofocus: !globals.activeIsTV,
+                              onPressed: () {
+                                //addToStorage();
+                                createVideoDialog(context, globals.firstLink);
+                                //createVideoDialog(context, globals.firstLink);
+                              },
+                              elevation: 2.0,
+                              fillColor: Theme.of(context).buttonColor,
+                              child: Focus(
+                                autofocus: true,
+                                onFocusChange: (isFocused) {
+                                  setState(() {
+                                    playButtonFocused = isFocused;
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.play_arrow,
+                                  size: 35.0,
                                 ),
-                                itemCount: 5,
-                                unratedColor: Colors.amber.withAlpha(50),
-                                direction: Axis.horizontal,
-                                itemSize: 15,
+                              ),
+                              padding: EdgeInsets.all(15.0),
+                              shape: CircleBorder(
+                                side: BorderSide(
+                                  color: playButtonFocused ? Colors.white : Colors.transparent,
+                                ),
+                              ),
+                            );
+                          }),
+                        )
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        RoundedContainer(
+                          width: _screenWidth - globals.activeOffset,
+                          child: Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                margin: EdgeInsets.only(left: globals.activeOffset),
+                                child: Opacity(
+                                  opacity: 0.5,
+                                  child: Text(
+                                    globals.activeYear.replaceAllMapped(RegExp(r'[()]'), (match) {
+                                      return '';
+                                    }),
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      fontFamily: 'DINPro',
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.fromLTRB(
+                                    globals.activeOffset,
+                                    globals.activeOffset / 2,
+                                    globals.activeOffset,
+                                    globals.activeOffset),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      globals.activeVote.toString().substring(0, 3) + ' ',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'DINPro',
+                                          color: Colors.amber),
+                                    ),
+                                    RatingBarIndicator(
+                                      rating: globals.activeVote / 2,
+                                      itemBuilder: (context, index) => Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                      ),
+                                      itemCount: 5,
+                                      unratedColor: Colors.amber.withAlpha(50),
+                                      direction: Axis.horizontal,
+                                      itemSize: 15,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.fromLTRB(globals.activeOffset, 0,
+                                    globals.activeOffset, 1.5 * globals.activeOffset),
+                                child: Opacity(
+                                    opacity: 0.5,
+                                    child: ExpandableText(
+                                      globals.activeDescription,
+                                      textAlign: TextAlign.justify,
+                                      expandOnTextTap: true,
+                                      collapseOnTextTap: true,
+                                      animation: true,
+                                      animationDuration: Duration(milliseconds: 500),
+                                      expandText: 'více',
+                                      collapseText: 'méně',
+                                      maxLines: 2,
+                                      linkColor: Colors.blue,
+                                      style: TextStyle(fontFamily: 'DINPro', height: 1.5),
+                                    )),
                               ),
                             ],
                           ),
                         ),
-                        Container(
-                          padding: EdgeInsets.fromLTRB(globals.activeOffset, 0,
-                              globals.activeOffset, 1.5 * globals.activeOffset),
-                          child: Opacity(
-                              opacity: 0.5,
-                              child: ExpandableText(
-                                globals.activeDescription,
-                                textAlign: TextAlign.justify,
-                                expandOnTextTap: true,
-                                collapseOnTextTap: true,
-                                animation: true,
-                                animationDuration: Duration(milliseconds: 500),
-                                expandText: "více",
-                                collapseText: "méně",
-                                maxLines: 2,
-                                linkColor: Colors.blue,
-                                style: TextStyle(fontFamily: "DINPro", height: 1.5),
-                              )),
-                        ),
-                      ],
-                    ),
-                  ),
-                  getEpisodeSelection(globals.activeIsTV, globals.activeId, globals.activeOffset,
-                      context, setState),
-                  RoundedContainer(
-                    padding: EdgeInsets.all(globals.activeOffset),
-                    margin:
-                        EdgeInsets.only(top: globals.activeOffset, bottom: globals.activeOffset),
-                    width: _screenWidth - globals.activeOffset,
-                    child: Column(
-                      children: [
-                        getCast(
-                            globals.activeId, globals.activeIsTV, globals.activeOffset, context),
-                        getDirector(
-                            globals.activeId, globals.activeIsTV, globals.activeOffset, context),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.only(
-                            bottom: globals.activeOffset / 2, left: globals.activeOffset),
-                        child: Text(
-                          "Zdroje",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "DINPro"),
-                        ),
-                      ),
-                      Container(
-                          //height: _screenHeight / 4,
+                        getEpisodeSelection(globals.activeIsTV, globals.activeId,
+                            globals.activeOffset, context, setState),
+                        RoundedContainer(
+                          padding: EdgeInsets.all(globals.activeOffset),
+                          margin: EdgeInsets.only(
+                              top: globals.activeOffset, bottom: globals.activeOffset),
                           width: _screenWidth - globals.activeOffset,
-                          color: Theme.of(context).primaryColor,
-                          child: FutureBuilder(
-                            future: generateStorageLinks(
-                                globals.activeIsTV
-                                    ? "${globals.activeTitle} " +
-                                        globals.actualSelectedSeason.toString().padLeft(2, "0") +
-                                        "x" +
-                                        globals.actualSelectedEpisode.toString().padLeft(2, "0")
-                                    : "${globals.activeTitle} ${globals.activeYear}",
-                                globals.activeIsTV
-                                    ? "${globals.activeOriginalTitle} " +
-                                        globals.actualSelectedSeason.toString().padLeft(2, "0") +
-                                        "x" +
-                                        globals.actualSelectedEpisode.toString().padLeft(2, "0")
-                                    : "${globals.activeOriginalTitle} ${globals.activeYear}",
-                                setState,
-                                "cz",
-                                globals.activeOffset),
-                            builder: (BuildContext context, AsyncSnapshot snapshot) {
-                              if (snapshot.connectionState == ConnectionState.done) {
-                                return snapshot.data;
-                              }
-                              return Align(
-                                  alignment: Alignment.topCenter, child: LinearProgressIndicator());
-                            },
-                          )),
-                    ],
-                  ),
-                  RoundedContainer(
-                    width: _screenWidth - globals.activeOffset,
-                    margin: EdgeInsets.only(top: globals.activeOffset),
-                    padding: EdgeInsets.all(globals.activeOffset),
-                    child: globals.activeIsTV
-                        ? SimilarShowsList(
-                            globals.activeId, _screenHeight / 4, globals.activeOffset)
-                        : SimilarMoviesList(
-                            globals.activeId, _screenHeight / 4, globals.activeOffset),
-                  ),
-                  callBack(
-                      child: Container(
-                    height: globals.activeOffset,
-                  )),
-                ],
-              )
-            ],
-          )),
-        ),
+                          child: Column(
+                            children: [
+                              getCast(globals.activeId, globals.activeIsTV, globals.activeOffset,
+                                  context),
+                              getDirector(globals.activeId, globals.activeIsTV,
+                                  globals.activeOffset, context),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.only(
+                                  bottom: globals.activeOffset / 2, left: globals.activeOffset),
+                              child: Text(
+                                'Zdroje',
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'DINPro'),
+                              ),
+                            ),
+                            Container(
+                                //height: _screenHeight / 4,
+                                width: _screenWidth - globals.activeOffset,
+                                color: Theme.of(context).primaryColor,
+                                child: FutureBuilder(
+                                  future: generateStorageLinks(
+                                      globals.activeIsTV
+                                          ? '${globals.activeTitle} ' +
+                                              globals.actualSelectedSeason
+                                                  .toString()
+                                                  .padLeft(2, '0') +
+                                              'x' +
+                                              globals.actualSelectedEpisode
+                                                  .toString()
+                                                  .padLeft(2, '0')
+                                          : '${globals.activeTitle} ${snapshot.data}',
+                                      globals.activeIsTV
+                                          ? '${globals.activeOriginalTitle} ' +
+                                              globals.actualSelectedSeason
+                                                  .toString()
+                                                  .padLeft(2, '0') +
+                                              'x' +
+                                              globals.actualSelectedEpisode
+                                                  .toString()
+                                                  .padLeft(2, '0')
+                                          : '${globals.activeOriginalTitle} ${snapshot.data}',
+                                      setState,
+                                      'cz',
+                                      globals.activeOffset),
+                                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.done) {
+                                      return snapshot.data;
+                                    }
+                                    return Align(
+                                        alignment: Alignment.topCenter,
+                                        child: LinearProgressIndicator());
+                                  },
+                                )),
+                          ],
+                        ),
+                        RoundedContainer(
+                          width: _screenWidth - globals.activeOffset,
+                          margin: EdgeInsets.only(top: globals.activeOffset),
+                          padding: EdgeInsets.all(globals.activeOffset),
+                          child: globals.activeIsTV
+                              ? SimilarShowsList(
+                                  globals.activeId, _screenHeight / 4, globals.activeOffset)
+                              : SimilarMoviesList(
+                                  globals.activeId, _screenHeight / 4, globals.activeOffset),
+                        ),
+                        callBack(
+                            child: Container(
+                          height: globals.activeOffset,
+                        )),
+                      ],
+                    )
+                  ],
+                )),
+              );
+            }),
       ),
     );
   }
@@ -339,19 +365,19 @@ class _SourcePageState extends State<SourcePage> {
                     child: Opacity(
                       opacity: 0.5,
                       child: Text(
-                        "Výběr epizody",
+                        'Výběr epizody',
                         textAlign: TextAlign.left,
-                        style: TextStyle(fontFamily: "DINPro"),
+                        style: TextStyle(fontFamily: 'DINPro'),
                       ),
                     ),
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Sezóna ${globals.actualSelectedSeason}, Epizoda ${globals.actualSelectedEpisode}",
+                      'Sezóna ${globals.actualSelectedSeason}, Epizoda ${globals.actualSelectedEpisode}',
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        fontFamily: "DINPro",
+                        fontFamily: 'DINPro',
                         fontSize: 18,
                       ),
                     ),

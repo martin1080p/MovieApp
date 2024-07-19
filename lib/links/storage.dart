@@ -53,7 +53,7 @@ Future generateStorageLinks(String searchTerm, String originalSearchTerm, Functi
   List<Map<String, dynamic>> originalList = [];
 
   for (int i = 0; i < titles.length; i++) {
-    if (usedSizes.contains(sizes[i])) continue;
+    //if (usedSizes.contains(sizes[i])) continue;
 
     usedSizes.add(sizes[i]);
 
@@ -88,7 +88,7 @@ Future generateStorageLinks(String searchTerm, String originalSearchTerm, Functi
           padding: EdgeInsets.all(0.0),
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: min(2, prefferedList.length),
+          itemCount: prefferedList.length,
           itemBuilder: (BuildContext context, int index) {
             //double _screenWidth = MediaQuery.of(context).size.width;
             //double _screenHeight = MediaQuery.of(context).size.height;
@@ -147,7 +147,7 @@ Future generateStorageLinks(String searchTerm, String originalSearchTerm, Functi
           padding: EdgeInsets.all(0.0),
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: min(1, originalList.length),
+          itemCount: originalList.length,
           itemBuilder: (BuildContext context, int index) {
             //double _screenWidth = MediaQuery.of(context).size.width;
             //double _screenHeight = MediaQuery.of(context).size.height;
@@ -343,7 +343,20 @@ Future<void> createVideoDialog(BuildContext context, String link) async {
               ],
             );
           } else if (loaded && error) {
-            return Text('Chyba načítání zdrojů');
+            return Center(
+              child: AlertDialog(
+                title: Text('Chyba'),
+                content: Text('Chyba načítání zdrojů'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Zavřít'),
+                  ),
+                ],
+              ),
+            );
           } else if (loaded && !error) {
             return MoviePlayer(
               initialSource: initialSource,
